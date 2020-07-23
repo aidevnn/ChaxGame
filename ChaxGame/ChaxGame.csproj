@@ -39,6 +39,14 @@
     <Compile Include="Cell.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="GridConsole.cs" />
+    <Compile Include="Moves\MoveFirstTurn.cs" />
+    <Compile Include="Moves\MovePlacement.cs" />
+    <Compile Include="Moves\IMove.cs" />
+    <Compile Include="Moves\MovePass.cs" />
+    <Compile Include="Moves\MoveBattle.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Moves\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
