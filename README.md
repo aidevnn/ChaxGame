@@ -1,2 +1,2 @@
 # ChaxGame
-Regional board 2 players game
+East africa regional 2 players game
