@@ -269,6 +269,10 @@ namespace ChaxGame
             Console.WriteLine($"Player:{player} {scorePlayer,2}; Opponent:{opponent} {scoreOpponent,2}");
         }
 
+        /// <summary>
+        /// Exports the cube as a string of 24 characters.
+        /// </summary>
+        /// <returns>The state.</returns>
         public string ExportState()
         {
             var s = "";
@@ -283,6 +287,10 @@ namespace ChaxGame
             return s;
         }
 
+        /// <summary>
+        /// Imports the cube content from a string of 24 characters.
+        /// </summary>
+        /// <param name="s">String.</param>
         public void ImportState(string s)
         {
             if (s.Length != 24)
@@ -296,5 +304,30 @@ namespace ChaxGame
                 else AllCells[i].Content = Content.Empty;
             }
         }
+
+        public void DoFrame((int, int, int) frame, Content player, int idBefore)
+        {
+            SetCell(idBefore, Content.Empty);
+            SetCell(frame.Item1, player);
+
+            if (frame.Item2 != -1)
+                SetCell(frame.Item2, Content.Empty);
+            if (frame.Item3 != -1)
+                SetCell(frame.Item3, Content.Empty);
+        }
+
+        public void UndoFrame((int, int, int) frame, Content player, int idBefore)
+        {
+            SetCell(idBefore, player);
+            SetCell(frame.Item1, Content.Empty);
+            var opponent = player.GetOpponent();
+
+            if (frame.Item2 != -1)
+                SetCell(frame.Item2, opponent);
+            if (frame.Item3 != -1)
+                SetCell(frame.Item3, opponent);
+        }
+
+
     }
 }
