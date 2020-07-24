@@ -122,7 +122,7 @@ namespace ChaxGame.Moves
             for(int i = 0; i < 24; ++i)
             {
                 var cell = cube.GetCell(i);
-
+                // TODO
             }
 
             if (moves.Count == 0)
