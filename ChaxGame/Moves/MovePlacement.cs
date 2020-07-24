@@ -4,7 +4,7 @@ namespace ChaxGame.Moves
     /// <summary>
     /// Move placement.
     /// </summary>
-    public class MovePlacement : IMove
+    public class MovePlacement : IMove, IComparable<MovePlacement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.MovePlacement"/> class.
@@ -41,6 +41,11 @@ namespace ChaxGame.Moves
         /// </summary>
         /// <value>The weight.</value>
         public int Weight { get; set; }
+
+        public int CompareTo(MovePlacement other)
+        {
+            return Weight.CompareTo(other.Weight) > 0 ? 1 : -1;
+        }
 
         /// <summary>
         /// Do move on the specified cube.

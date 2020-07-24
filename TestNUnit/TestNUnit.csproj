@@ -31,7 +31,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TestCubeDomination.cs" />
+    <Compile Include="Test1CubeDomination.cs" />
+    <Compile Include="Test2MoveBattle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

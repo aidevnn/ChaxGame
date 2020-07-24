@@ -43,6 +43,7 @@
     <Compile Include="Moves\MovePlacement.cs" />
     <Compile Include="Moves\IMove.cs" />
     <Compile Include="Moves\MovePass.cs" />
+    <Compile Include="Moves\Generator.cs" />
     <Compile Include="Moves\MoveBattle.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -61,14 +61,32 @@ namespace ChaxGame
 
         /// <summary>
         /// The all neighbors of a cell.
-        /// A key value pair, the direction of the neighbor and the neighbor cell
         /// </summary>
-        public Dictionary<DIR, Cell> Neighbors = new Dictionary<DIR, Cell>();
+        public List<Cell> Neighbors = new List<Cell>(3);
 
         /// <summary>
         /// The rows.
         /// A row was composed of two next neighbors of this cell in a same direction
         /// </summary>
         public List<Cell[]> Rows = new List<Cell[]>();
+
+        /// <summary>
+        /// Checks the row for killing opponent.
+        /// </summary>
+        /// <returns><c>true</c>, if row was checked, <c>false</c> otherwise.</returns>
+        /// <param name="row">Row.</param>
+        public int CheckRow(Cell[] row)
+        {
+            if (row.Length != 2)
+                throw new Exception("Not a row");
+
+            var c0 = row[0];
+            var c1 = row[1];
+
+            if (Content.DiffPlayer(c0.Content) && Content.SamePlayer(c1.Content))
+                return c0.Id;
+
+            return -1;
+        }
     }
 }

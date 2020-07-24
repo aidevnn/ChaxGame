@@ -6,7 +6,7 @@ using ChaxGame;
 namespace TestNUnit
 {
     [TestFixture()]
-    public class TestCubeDomination
+    public class Test1CubeDomination
     {
         [Test(Description ="Empty Cube")]
         public void TestCaseEmptyCube()

@@ -10,6 +10,11 @@ namespace ChaxGame
     public class Cube
     {
         /// <summary>
+        /// Cube id to 3D coords.
+        /// </summary>
+        public static (int, int, int)[] Id2Coords = { (0, 0, 0), (0, 0, 1), (0, 0, 2), (0, 1, 0), (0, 1, 1), (0, 1, 2), (0, 2, 0), (0, 2, 1), (0, 2, 2), (1, 0, 0), (1, 0, 1), (1, 0, 2), (1, 2, 0), (1, 2, 1), (1, 2, 2), (2, 0, 0), (2, 0, 1), (2, 0, 2), (2, 1, 0), (2, 1, 1), (2, 1, 2), (2, 2, 0), (2, 2, 1), (2, 2, 2) };
+
+        /// <summary>
         /// All cells by coordinates
         /// </summary>
         Cell[,,] Cells;
@@ -110,7 +115,7 @@ namespace ChaxGame
                             var c1 = c.Next(d);
                             var cell1 = GetCell(c1);
                             if (cell1 == null) continue;
-                            cell0.Neighbors.Add(d, cell1);
+                            cell0.Neighbors.Add(cell1);
                             cc.Neighbors.Add(CellContents[cell1.Id]);
 
                             var c2 = c1.Next(d);
@@ -262,6 +267,34 @@ namespace ChaxGame
             var opponent = player.GetOpponent();
             GridConsole.DisplayConsole(false);
             Console.WriteLine($"Player:{player} {scorePlayer,2}; Opponent:{opponent} {scoreOpponent,2}");
+        }
+
+        public string ExportState()
+        {
+            var s = "";
+            for(int i = 0; i < 24; ++i)
+            {
+                var c = AllCells[i].Content;
+                if (c == Content.Empty) s += ' ';
+                else if (c == Content.P1) s += 'X';
+                else s += 'O';
+            }
+
+            return s;
+        }
+
+        public void ImportState(string s)
+        {
+            if (s.Length != 24)
+                throw new Exception("State must contains 24 characters.");
+
+            for(int i = 0; i < 24; ++i)
+            {
+                var c = s[i];
+                if (c == 'X') AllCells[i].Content = Content.P1;
+                else if (c == 'O') AllCells[i].Content = Content.P2;
+                else AllCells[i].Content = Content.Empty;
+            }
         }
     }
 }

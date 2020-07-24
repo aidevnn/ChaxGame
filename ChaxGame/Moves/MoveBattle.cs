@@ -1,24 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ChaxGame.Moves
 {
     /// <summary>
     /// Move battle.
     /// </summary>
-    public class MoveBattle : IMove
+    public class MoveBattle : IMove, IComparable<MoveBattle>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.MoveBattle"/> class.
         /// </summary>
         /// <param name="player">Player.</param>
-        /// <param name="idCellBefore">Identifier cell before move.</param>
+        /// <param name="idCellBefore">Identifier cell before.</param>
         public MoveBattle(Content player, int idCellBefore)
         {
             Player = player;
             IdCellBefore = IdCellAfter = idCellBefore;
             ActionType = ActionType.Battle;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.MoveBattle"/> class.
+        /// </summary>
+        /// <param name="player">Player.</param>
+        /// <param name="idCellBefore">Identifier cell before.</param>
+        /// <param name="idCellAfter">Identifier cell after.</param>
+        public MoveBattle(Content player, int idCellBefore, int idCellAfter)
+        {
+            Player = player;
+            IdCellBefore = idCellBefore;
+            IdCellAfter = idCellAfter;
+            ActionType = ActionType.Battle;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.MoveBattle"/> class.
+        /// </summary>
+        /// <param name="move">Move.</param>
+        public MoveBattle(MoveBattle move)
+        {
+            ActionType = ActionType.Battle;
+            Player = move.Player;
+            IdCellBefore = move.IdCellBefore;
+            IdCellAfter = move.IdCellAfter;
+            Weight = move.Weight;
+            KilledOpponents.AddRange(move.KilledOpponents);
+        }
+
+        public int CompareTo(MoveBattle other)
+        {
+            return Weight.CompareTo(other.Weight) > 0 ? 1 : -1;
         }
 
         /// <summary>
@@ -32,13 +66,6 @@ namespace ChaxGame.Moves
         /// </summary>
         /// <value>The identifier cell after.</value>
         public int IdCellAfter { get; set; }
-
-        /// <summary>
-        /// The killed opponents cells identifiers.
-        /// First int is for player cell id, others int are for opponent cell id.
-        /// It will also be helpfull for displaying frames during a game.
-        /// </summary>
-        public List<(int, int, int, int)> KilledOpponents = new List<(int, int, int, int)>(12);
 
         /// <summary>
         /// Gets or sets the player.
@@ -62,15 +89,15 @@ namespace ChaxGame.Moves
         /// Clone this instance.
         /// </summary>
         /// <returns>The clone.</returns>
-        public MoveBattle Clone()
-        {
-            var m = new MoveBattle(Player, IdCellBefore);
-            m.IdCellAfter = IdCellAfter;
-            m.Weight = Weight;
-            m.KilledOpponents.AddRange(KilledOpponents);
+        public MoveBattle Clone => new MoveBattle(this);
 
-            return m;
-        }
+        /// <summary>
+        /// The killed opponents cells identifiers.
+        /// It will also be helpfull for displaying frames during a game.
+        /// First int of tuple is for cell identifier to move in.
+        /// Second list int of tuple is for killed opponents identifiers.
+        /// </summary>
+        public List<(int, int, int)> KilledOpponents = new List<(int, int, int)>(12);
 
         /// <summary>
         /// Do move on the specified cube.
@@ -81,14 +108,10 @@ namespace ChaxGame.Moves
             cube.SetCell(IdCellBefore, Content.Empty);
             cube.SetCell(IdCellAfter, Player);
 
-            foreach (var id in KilledOpponents)
+            foreach (var e in KilledOpponents)
             {
-                if (id.Item2 != -1)
-                    cube.SetCell(id.Item2, Content.Empty);
-                if (id.Item3 != -1)
-                    cube.SetCell(id.Item3, Content.Empty);
-                if (id.Item4 != -1)
-                    cube.SetCell(id.Item4, Content.Empty);
+                if (e.Item2 != -1) cube.SetCell(e.Item2, Content.Empty);
+                if (e.Item3 != -1) cube.SetCell(e.Item3, Content.Empty);
             }
         }
 
@@ -99,18 +122,39 @@ namespace ChaxGame.Moves
         public void Undo(Cube cube)
         {
             var opponent = Player.GetOpponent();
-            cube.SetCell(IdCellBefore, Player);
             cube.SetCell(IdCellAfter, Content.Empty);
+            cube.SetCell(IdCellBefore, Player);
 
-            foreach (var id in KilledOpponents)
+            foreach (var e in KilledOpponents)
             {
-                if (id.Item2 != -1)
-                    cube.SetCell(id.Item2, opponent);
-                if (id.Item3 != -1)
-                    cube.SetCell(id.Item3, opponent);
-                if (id.Item4 != -1)
-                    cube.SetCell(id.Item4, opponent);
+                if (e.Item2 != -1) cube.SetCell(e.Item2, opponent);
+                if (e.Item3 != -1) cube.SetCell(e.Item3, opponent);
             }
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            var cb = Cube.Id2Coords[IdCellBefore];
+            var ca = Cube.Id2Coords[IdCellAfter];
+            var title = $"Player:{Player} MoveBattle; Weight: {Weight}";
+            sb.AppendLine(title); 
+            var head = $"From: [{IdCellBefore,2:00}]{cb}";
+            var tail = $"To  : [{IdCellAfter,2:00}]{ca}";
+            sb.AppendLine(head);
+            if (KilledOpponents.Count != 0)
+            {
+                sb.AppendLine("  Frames.");
+                foreach(var e in KilledOpponents)
+                {
+                    string s0 = $"    To: [{e.Item1,2:00}]{Cube.Id2Coords[e.Item1]}";
+                    string s1 = e.Item2 != -1 ? $"[{e.Item2,2:00}]{Cube.Id2Coords[e.Item2]}" : "";
+                    string s2 = e.Item3 != -1 ? $" and [{e.Item3,2:00}]{Cube.Id2Coords[e.Item3]}" : "";
+                    sb.AppendLine($"{s0}; Kill: {s1}{s2}");
+                }
+            }
+            sb.AppendLine(tail);
+            return sb.ToString();
         }
     }
 }

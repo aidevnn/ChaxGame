@@ -30,4 +30,9 @@ namespace ChaxGame
     /// Place for action placement, Remove for action first tun, Battle for action battle and Pass for no action
     /// </summary>
     public enum ActionType { Place, Remove, Battle, Pass }
+
+    /// <summary>
+    /// Move strategy.
+    /// </summary>
+    public enum MoveStrategy { Random, Power, Domination }
 }
