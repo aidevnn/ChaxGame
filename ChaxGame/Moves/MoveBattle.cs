@@ -14,26 +14,31 @@ namespace ChaxGame.Moves
         /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.MoveBattle"/> class.
         /// </summary>
         /// <param name="player">Player.</param>
-        /// <param name="idCellBefore">Identifier cell before.</param>
-        public MoveBattle(Content player, int idCellBefore)
+        /// <param name="idCell">Identifier cell before.</param>
+        public MoveBattle(Content player, int idCell)
         {
             Player = player;
-            IdCellBefore = IdCellAfter = idCellBefore;
+            Opponent = Player.GetOpponent();
             ActionType = ActionType.Battle;
+            IdBefore = IdAfter = idCell;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.MoveBattle"/> class.
         /// </summary>
-        /// <param name="player">Player.</param>
-        /// <param name="idCellBefore">Identifier cell before.</param>
-        /// <param name="idCellAfter">Identifier cell after.</param>
-        public MoveBattle(Content player, int idCellBefore, int idCellAfter)
+        /// <param name="previous">Previous.</param>
+        /// <param name="idBefore">Identifier before.</param>
+        /// <param name="idAfter">Identifier after.</param>
+        public MoveBattle(MoveBattle previous, int idBefore, int idAfter)
         {
-            Player = player;
-            IdCellBefore = idCellBefore;
-            IdCellAfter = idCellAfter;
+            Player = previous.Player;
+            Opponent = Player.GetOpponent();
+            IdBefore = idBefore;
+            IdAfter = idAfter;
             ActionType = ActionType.Battle;
+            AllSteps.AddRange(previous.AllSteps);
+            TotalKills = previous.TotalKills;
+            Steps = previous.Steps + 1;
         }
 
         /// <summary>
@@ -44,34 +49,41 @@ namespace ChaxGame.Moves
         {
             ActionType = ActionType.Battle;
             Player = move.Player;
-            IdCellBefore = move.IdCellBefore;
-            IdCellAfter = move.IdCellAfter;
+            Opponent = Player.GetOpponent();
             Weight = move.Weight;
-            KilledOpponents.AddRange(move.KilledOpponents);
+            TotalKills = move.TotalKills;
+            Steps = move.Steps;
+            AllSteps.AddRange(move.AllSteps);
         }
 
         public int CompareTo(MoveBattle other)
         {
-            return Weight.CompareTo(other.Weight) > 0 ? 1 : -1;
+            return other.Weight.CompareTo(Weight) > 0 ? 1 : -1;
         }
 
         /// <summary>
-        /// Gets or sets the identifier cell before the move.
+        /// Gets or sets the identifier of starting cell.
         /// </summary>
-        /// <value>The identifier cell before.</value>
-        public int IdCellBefore { get; set; }
+        /// <value>The identifier cell.</value>
+        public int IdBefore { get; set; }
 
         /// <summary>
-        /// Gets or sets the identifier cell after the move.
+        /// Gets or sets the identifier of last cell.
         /// </summary>
-        /// <value>The identifier cell after.</value>
-        public int IdCellAfter { get; set; }
+        /// <value>The identifier after.</value>
+        public int IdAfter { get; set; }
 
         /// <summary>
         /// Gets or sets the player.
         /// </summary>
         /// <value>The player.</value>
         public Content Player { get; set; }
+
+        /// <summary>
+        /// Gets the opponent.
+        /// </summary>
+        /// <value>The opponent.</value>
+        public Content Opponent { get; private set; }
 
         /// <summary>
         /// Gets or sets the type of the action.
@@ -92,12 +104,24 @@ namespace ChaxGame.Moves
         public MoveBattle Clone => new MoveBattle(this);
 
         /// <summary>
-        /// The killed opponents cells identifiers.
+        /// The stack of all steps.
         /// It will also be helpfull for displaying frames during a game.
-        /// First int of tuple is for cell identifier to move in.
-        /// Second list int of tuple is for killed opponents identifiers.
         /// </summary>
-        public List<(int, int, int)> KilledOpponents = new List<(int, int, int)>(12);
+        public List<SubMove> AllSteps = new List<SubMove>(12);
+
+        /// <summary>
+        /// Gets or sets the steps.
+        /// </summary>
+        /// <value>The steps.</value>
+        public int Steps { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total kils.
+        /// </summary>
+        /// <value>The total kils.</value>
+        public int TotalKills { get; set; }
+
+        public static int NbSteps = 0;
 
         /// <summary>
         /// Do move on the specified cube.
@@ -105,13 +129,10 @@ namespace ChaxGame.Moves
         /// <param name="cube">Cube.</param>
         public void Do(Cube cube)
         {
-            cube.SetCell(IdCellBefore, Content.Empty);
-            cube.SetCell(IdCellAfter, Player);
-
-            foreach (var e in KilledOpponents)
+            foreach (var mv in AllSteps)
             {
-                if (e.Item2 != -1) cube.SetCell(e.Item2, Content.Empty);
-                if (e.Item3 != -1) cube.SetCell(e.Item3, Content.Empty);
+                ++NbSteps;
+                mv.DoStep(cube, Player);
             }
         }
 
@@ -121,35 +142,32 @@ namespace ChaxGame.Moves
         /// <param name="cube">Cube.</param>
         public void Undo(Cube cube)
         {
-            var opponent = Player.GetOpponent();
-            cube.SetCell(IdCellAfter, Content.Empty);
-            cube.SetCell(IdCellBefore, Player);
-
-            foreach (var e in KilledOpponents)
+            foreach (var mv in AllSteps.Reverse<SubMove>())
             {
-                if (e.Item2 != -1) cube.SetCell(e.Item2, opponent);
-                if (e.Item3 != -1) cube.SetCell(e.Item3, opponent);
+                ++NbSteps;
+                mv.UndoStep(cube, Player, Opponent);
             }
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            var cb = Cube.Id2Coords[IdCellBefore];
-            var ca = Cube.Id2Coords[IdCellAfter];
+
+            var cb = Cube.Id2Coords[IdBefore];
+            var ca = Cube.Id2Coords[IdAfter];
             var title = $"Player:{Player} MoveBattle; Weight: {Weight}";
             sb.AppendLine(title); 
-            var head = $"From: [{IdCellBefore,2:00}]{cb}";
-            var tail = $"To  : [{IdCellAfter,2:00}]{ca}";
+            var head = $"From: [{IdBefore,2:00}]{cb}";
+            var tail = $"To  : [{IdAfter,2:00}]{ca}";
             sb.AppendLine(head);
-            if (KilledOpponents.Count != 0)
+            if (AllSteps.Count != 0)
             {
                 sb.AppendLine("  Frames.");
-                foreach(var e in KilledOpponents)
+                foreach(var e in AllSteps)
                 {
-                    string s0 = $"    To: [{e.Item1,2:00}]{Cube.Id2Coords[e.Item1]}";
-                    string s1 = e.Item2 != -1 ? $"[{e.Item2,2:00}]{Cube.Id2Coords[e.Item2]}" : "";
-                    string s2 = e.Item3 != -1 ? $" and [{e.Item3,2:00}]{Cube.Id2Coords[e.Item3]}" : "";
+                    string s0 = $"   From: [{e.idBefore,2:00}]{Cube.Id2Coords[e.idBefore]} To  : [{e.idAfter,2:00}]{Cube.Id2Coords[e.idAfter]}";
+                    string s1 = e.idOpp1 != -1 ? $"[{e.idOpp1,2:00}]{Cube.Id2Coords[e.idOpp1]}" : "";
+                    string s2 = e.idOpp2 != -1 ? $" and [{e.idOpp2,2:00}]{Cube.Id2Coords[e.idOpp2]}" : "";
                     sb.AppendLine($"{s0}; Kill: {s1}{s2}");
                 }
             }

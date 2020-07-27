@@ -58,10 +58,10 @@ namespace ChaxGame.Moves
             return moves;
         }
 
-        public static void BuildMoveBattles(Cube cube, MoveBattle current, List<MoveBattle> moves, bool starting = true)
+        public static void BuildMoveBattleStep(Cube cube, MoveBattle current, SortedSet<MoveBattle> moves)
         {
-            var cell = cube.GetCell(current.IdCellAfter);
-            if (starting && cell.Content.DiffPlayer(current.Player))
+            var cell = cube.GetCell(current.IdAfter);
+            if (current.Steps == 0 && cell.Content.DiffPlayer(current.Player))
                 throw new Exception("Root move invalid.");
 
             foreach (var n in cell.Neighbors)
@@ -69,51 +69,47 @@ namespace ChaxGame.Moves
                 if (n.Content != Content.Empty)
                     continue;
 
-                var mv = new MoveBattle(current.Player, current.IdCellBefore, n.Id);
-                mv.KilledOpponents.AddRange(current.KilledOpponents);
-                SetOppKill(cube, mv);
+                var mv = new MoveBattle(current, current.IdBefore, n.Id);
+                var ms = BuildSubMove(cube, current.Player, current.IdAfter, n.Id);
+                mv.TotalKills += ms.nbKills;
+                mv.AllSteps.Add(ms);
 
-                if (starting)
-                    moves.Add(mv);
+                ms.DoStep(cube, mv.Player);
 
-                if (mv.KilledOpponents.Count > current.KilledOpponents.Count)
+                if (mv.Steps == 1 || ms.nbKills != 0)
                 {
-                    if (!starting)
-                        moves.Add(mv);
-
-                    mv.Do(cube);
-                    BuildMoveBattles(cube, mv, moves, false);
-                    mv.Undo(cube);
+                    mv.Weight =MainClass.Random.Next(100) + n.Power * 100 + mv.TotalKills * 1000;
+                    moves.Add(mv);
                 }
+
+                if (ms.nbKills != 0)
+                    BuildMoveBattleStep(cube, mv, moves);
+
+                ms.UndoStep(cube, mv.Player, mv.Opponent);
             }
         }
 
-        public static void SetOppKill(Cube cube, MoveBattle mv)
+        public static SubMove BuildSubMove(Cube cube, Content player, int idBefore, int idAfter)
         {
-            var cell = cube.GetCell(mv.IdCellAfter);
-            int nb = 0;
-            var q = (-1, -1, -1);
+            var cell = cube.GetCell(idAfter);
+            var ms = new SubMove() { idBefore = idBefore, idAfter = idAfter, idOpp1 = -1, idOpp2 = -1 };
 
-            foreach(var row in cell.Rows)
+            foreach (var row in cell.Rows)
             {
                 var row0 = row[0];
                 var c0 = row0.Content;
                 var c1 = row[1].Content;
 
-                if (mv.Player.DiffPlayer(c0) && mv.Player.SamePlayer(c1))
+                if (player.DiffPlayer(c0) && player.SamePlayer(c1))
                 {
-                    if (nb == 0) q.Item2 = row0.Id;
-                    else q.Item3 = row0.Id;
+                    if (ms.nbKills == 0) ms.idOpp1 = row0.Id;
+                    else ms.idOpp2 = row0.Id;
 
-                    ++nb;
+                    ++ms.nbKills;
                 }
             }
 
-            if (nb != 0)
-            {
-                q.Item1 = mv.IdCellAfter;
-                mv.KilledOpponents.Add(q);
-            }
+            return ms;
         }
 
         public static IEnumerable<IMove> BattleMoves(Cube cube, Content player)
@@ -122,7 +118,10 @@ namespace ChaxGame.Moves
             for(int i = 0; i < 24; ++i)
             {
                 var cell = cube.GetCell(i);
-                // TODO
+                if (cell.Content != player)
+                    continue;
+
+                BuildMoveBattleStep(cube, new MoveBattle(player, cell.Id), moves);
             }
 
             if (moves.Count == 0)

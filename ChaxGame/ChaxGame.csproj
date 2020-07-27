@@ -19,6 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -27,6 +28,7 @@
     <WarningLevel>4</WarningLevel>
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -45,6 +47,9 @@
     <Compile Include="Moves\MovePass.cs" />
     <Compile Include="Moves\Generator.cs" />
     <Compile Include="Moves\MoveBattle.cs" />
+    <Compile Include="Moves\SubMove.cs" />
+    <Compile Include="Benchmark.cs" />
+    <Compile Include="DisplayDemo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Moves\" />
