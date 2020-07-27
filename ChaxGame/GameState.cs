@@ -73,6 +73,7 @@ namespace ChaxGame
             {
                 Do(move);
                 GridConsole.DisplayCube(Cube);
+                Console.WriteLine("End Display");
                 Console.ReadLine();
             }
             else
@@ -80,13 +81,17 @@ namespace ChaxGame
                 ++Turn;
                 var mv = move as MoveBattle;
 
+                int nb = mv.AllSteps.Count, k = 0;
                 foreach (var ms in mv.AllSteps)
                 {
                     ms.DoStep(Cube, mv.Player);
                     GridConsole.DisplayCube(Cube);
+                    Console.WriteLine($"frame: {++k}/{nb}");
                     Console.ReadLine();
                 }
 
+                Console.WriteLine("End Display");
+                Console.ReadLine();
                 Player = move.Player.GetOpponent();
             }
         }
