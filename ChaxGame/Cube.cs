@@ -60,10 +60,13 @@ namespace ChaxGame
         /// </summary>
         Dictionary<int, CellContent> CellContents = new Dictionary<int, CellContent>(24);
 
+        int domPlayer, domOpponent, nbPlayer, nbOpponent;
+
         /// <summary>
-        /// The score1 and score2 for players dominations.
+        /// Gets or sets the cube score.
         /// </summary>
-        int scorePlayer, scoreOpponent;
+        /// <value>The cube score.</value>
+        public CubeScore CubeScore { get; set; }
 
         /// <summary>
         /// Clone this instance.
@@ -190,14 +193,14 @@ namespace ChaxGame
         /// </summary>
         /// <returns>The domination.</returns>
         /// <param name="player">Player.</param>
-        public int ComputeDomination(Content player)
+        public CubeScore ComputeCubeScore(Content player)
         {
             if (player == Content.Empty)
                 throw new Exception("Compute Domination for player one or player two");
 
             q.Clear();
             var opponent = player.GetOpponent();
-            scorePlayer = scoreOpponent = 0;
+            domPlayer = domOpponent = nbPlayer = nbOpponent = 0;
 
             for (int i = 0; i < 24; ++i)
             {
@@ -211,8 +214,16 @@ namespace ChaxGame
                     q.Enqueue(cc);
                     cc.AltContent = cc.Content;
 
-                    if (cc.Content == player) scorePlayer += cc.Power;
-                    if (cc.Content == opponent) scoreOpponent += cc.Power;
+                    if (cc.Content == player)
+                    {
+                        domPlayer += cc.Power;
+                        ++nbPlayer;
+                    }
+                    if (cc.Content == opponent)
+                    {
+                        domOpponent += cc.Power;
+                        ++nbOpponent;
+                    }
                 }
             }
 
@@ -227,22 +238,23 @@ namespace ChaxGame
                         n.Step = c.Step + 1;
                         q.Enqueue(n);
 
-                        if (n.Content == player) scorePlayer += n.Power;
-                        if (n.Content == opponent) scoreOpponent += n.Power;
+                        if (n.Content == player) domPlayer += n.Power;
+                        if (n.Content == opponent) domOpponent += n.Power;
                     }
                     else if (n.Content != c.Content && n.AltContent == Content.Empty && n.Step == c.Step + 1)
                     {
                         n.AltContent = c.Content;
                         if (n.Content == opponent && c.Content == player)
                         {
-                            scorePlayer += n.Power;
-                            scoreOpponent -= n.Power;
+                            domPlayer += n.Power;
+                            domOpponent -= n.Power;
                         }
                     }
                 }
             }
 
-            return 50 + scorePlayer - scoreOpponent;
+            CubeScore = new CubeScore(player, nbPlayer, nbOpponent, domPlayer, domOpponent);
+            return CubeScore;
         }
 
         /// <summary>
@@ -266,7 +278,7 @@ namespace ChaxGame
 
             var opponent = player.GetOpponent();
             GridConsole.DisplayConsole(false);
-            Console.WriteLine($"Player:{player} {scorePlayer,2}; Opponent:{opponent} {scoreOpponent,2}");
+            Console.WriteLine($"Player:{player} {domPlayer,2}; Opponent:{opponent} {domOpponent,2}");
         }
 
         /// <summary>
@@ -304,30 +316,6 @@ namespace ChaxGame
                 else AllCells[i].Content = Content.Empty;
             }
         }
-
-        public void DoFrame((int, int, int) frame, Content player, int idBefore)
-        {
-            SetCell(idBefore, Content.Empty);
-            SetCell(frame.Item1, player);
-
-            if (frame.Item2 != -1)
-                SetCell(frame.Item2, Content.Empty);
-            if (frame.Item3 != -1)
-                SetCell(frame.Item3, Content.Empty);
-        }
-
-        public void UndoFrame((int, int, int) frame, Content player, int idBefore)
-        {
-            SetCell(idBefore, player);
-            SetCell(frame.Item1, Content.Empty);
-            var opponent = player.GetOpponent();
-
-            if (frame.Item2 != -1)
-                SetCell(frame.Item2, opponent);
-            if (frame.Item3 != -1)
-                SetCell(frame.Item3, opponent);
-        }
-
 
     }
 }

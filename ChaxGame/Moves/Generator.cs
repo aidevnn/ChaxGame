@@ -24,7 +24,7 @@ namespace ChaxGame.Moves
 
                 var mv = new MovePlacement(player, idCell);
                 mv.Do(cube);
-                mv.Weight = MainClass.Random.Next(100) + cube.ComputeDomination(player) * dom * 100 + 10000 * pow * c.Power;
+                mv.Weight = MainClass.Random.Next(100) + cube.ComputeCubeScore(player).DomPlayer * dom * 100 + 10000 * pow * c.Power;
                 moves.Add(mv);
                 mv.Undo(cube);
             }
@@ -50,7 +50,7 @@ namespace ChaxGame.Moves
 
                 var mv = new MoveFirstTurn(player, idCell);
                 mv.Do(cube);
-                mv.Weight = MainClass.Random.Next(100) + cube.ComputeDomination(player) * dom * 100 + 10000 * pow * c.Power;
+                mv.Weight = MainClass.Random.Next(100) + cube.ComputeCubeScore(player).DomPlayer * dom * 100 + 10000 * pow * c.Power;
                 moves.Add(mv);
                 mv.Undo(cube);
             }
@@ -58,7 +58,7 @@ namespace ChaxGame.Moves
             return moves;
         }
 
-        public static void BuildMoveBattleStep(Cube cube, MoveBattle current, SortedSet<MoveBattle> moves)
+        public static void BuildMoveBattle(Cube cube, MoveBattle current, SortedSet<MoveBattle> moves)
         {
             var cell = cube.GetCell(current.IdAfter);
             if (current.Steps == 0 && cell.Content.DiffPlayer(current.Player))
@@ -78,12 +78,12 @@ namespace ChaxGame.Moves
 
                 if (mv.Steps == 1 || ms.nbKills != 0)
                 {
-                    mv.Weight =MainClass.Random.Next(100) + n.Power * 100 + mv.TotalKills * 1000;
+                    mv.Weight = MainClass.Random.Next(100) + n.Power * 100 + mv.TotalKills * 1000;
                     moves.Add(mv);
                 }
 
                 if (ms.nbKills != 0)
-                    BuildMoveBattleStep(cube, mv, moves);
+                    BuildMoveBattle(cube, mv, moves);
 
                 ms.UndoStep(cube, mv.Player, mv.Opponent);
             }
@@ -121,7 +121,7 @@ namespace ChaxGame.Moves
                 if (cell.Content != player)
                     continue;
 
-                BuildMoveBattleStep(cube, new MoveBattle(player, cell.Id), moves);
+                BuildMoveBattle(cube, new MoveBattle(player, cell.Id), moves);
             }
 
             if (moves.Count == 0)

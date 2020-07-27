@@ -107,7 +107,7 @@ namespace ChaxGame.Moves
         /// The stack of all steps.
         /// It will also be helpfull for displaying frames during a game.
         /// </summary>
-        public List<SubMove> AllSteps = new List<SubMove>(12);
+        public List<SubMove> AllSteps { get; set; } = new List<SubMove>(12);
 
         /// <summary>
         /// Gets or sets the steps.
@@ -160,17 +160,15 @@ namespace ChaxGame.Moves
             var head = $"From: [{IdBefore,2:00}]{cb}";
             var tail = $"To  : [{IdAfter,2:00}]{ca}";
             sb.AppendLine(head);
-            if (AllSteps.Count != 0)
+
+            foreach (var e in AllSteps)
             {
-                sb.AppendLine("  Frames.");
-                foreach(var e in AllSteps)
-                {
-                    string s0 = $"   From: [{e.idBefore,2:00}]{Cube.Id2Coords[e.idBefore]} To  : [{e.idAfter,2:00}]{Cube.Id2Coords[e.idAfter]}";
-                    string s1 = e.idOpp1 != -1 ? $"[{e.idOpp1,2:00}]{Cube.Id2Coords[e.idOpp1]}" : "";
-                    string s2 = e.idOpp2 != -1 ? $" and [{e.idOpp2,2:00}]{Cube.Id2Coords[e.idOpp2]}" : "";
-                    sb.AppendLine($"{s0}; Kill: {s1}{s2}");
-                }
+                string s0 = $"   From: [{e.idBefore,2:00}]{Cube.Id2Coords[e.idBefore]} To  : [{e.idAfter,2:00}]{Cube.Id2Coords[e.idAfter]}";
+                string s1 = e.idOpp1 != -1 ? $"[{e.idOpp1,2:00}]{Cube.Id2Coords[e.idOpp1]}" : "";
+                string s2 = e.idOpp2 != -1 ? $" and [{e.idOpp2,2:00}]{Cube.Id2Coords[e.idOpp2]}" : "";
+                sb.AppendLine($"{s0}; Kill: {s1}{s2}");
             }
+
             sb.AppendLine(tail);
             return sb.ToString();
         }

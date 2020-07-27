@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-
-using ChaxGame.Moves;
 
 namespace ChaxGame
 {
@@ -16,9 +10,20 @@ namespace ChaxGame
         {
             Console.WriteLine("Hello World!");
 
-            DisplayDemo.Moves1();
+            //DisplayDemo.Moves1();
 
             //Benchmark.BruteForce(4);
+
+            var g = new GameState(MoveStrategy.Domination);
+            while (true)
+            {
+                int depth = g.Turn < 25 ? 3 : 4;
+                GridConsole.DisplayCube(g.Cube);
+                Console.WriteLine("Compute....");
+
+                var mv = MinMaxAlgorithm.AlphaBeta(g, depth);
+                g.DoMoveAndDisplay(mv);
+            }
         }
     }
 }

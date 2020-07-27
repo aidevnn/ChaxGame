@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Text;
+
 namespace ChaxGame.Moves
 {
     /// <summary>
     /// Move first turn.
     /// </summary>
-    public class MoveFirstTurn : IMove
+    public class MoveFirstTurn : IMove, IComparable<MoveFirstTurn>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="T:ChaxGame.Moves.ActionFirstTurn"/> class.
@@ -38,6 +40,11 @@ namespace ChaxGame.Moves
         /// <value>The weight.</value>
         public int Weight { get; set; }
 
+        public int CompareTo(MoveFirstTurn other)
+        {
+            return other.Weight.CompareTo(Weight) > 0 ? 1 : -1;
+        }
+
         /// <summary>
         /// Do move on the specified cube.
         /// </summary>
@@ -54,6 +61,19 @@ namespace ChaxGame.Moves
         public void Undo(Cube cube)
         {
             cube.SetCell(IdCell, Player);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            var ca = Cube.Id2Coords[IdCell];
+            var title = $"Player:{Player} MoveFirstTurn; Weight: {Weight}";
+            sb.AppendLine(title);
+            var tail = $"From: [{IdCell,2:00}]{ca}";
+            sb.AppendLine(tail);
+
+            return sb.ToString();
         }
     }
 }

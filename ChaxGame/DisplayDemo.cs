@@ -49,7 +49,7 @@ namespace ChaxGame
 
             var root = new MoveBattle(Content.P1, cube.GetCell((0, 2, 0)).Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
 
             DisplayMoves(cube, moves);
         }
@@ -82,7 +82,7 @@ namespace ChaxGame
 
             var root = new MoveBattle(Content.P1, cell1.Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
 
             DisplayMoves(cube, moves);
         }

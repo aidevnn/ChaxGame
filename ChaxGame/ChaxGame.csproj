@@ -50,6 +50,9 @@
     <Compile Include="Moves\SubMove.cs" />
     <Compile Include="Benchmark.cs" />
     <Compile Include="DisplayDemo.cs" />
+    <Compile Include="CubeScore.cs" />
+    <Compile Include="GameState.cs" />
+    <Compile Include="MinMaxAlgorithm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Moves\" />

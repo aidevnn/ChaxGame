@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+
 namespace ChaxGame.Moves
 {
     /// <summary>
@@ -44,7 +46,7 @@ namespace ChaxGame.Moves
 
         public int CompareTo(MovePlacement other)
         {
-            return Weight.CompareTo(other.Weight) > 0 ? 1 : -1;
+            return other.Weight.CompareTo(Weight) > 0 ? 1 : -1;
         }
 
         /// <summary>
@@ -63,6 +65,19 @@ namespace ChaxGame.Moves
         public void Undo(Cube cube)
         {
             cube.SetCell(IdCell, Content.Empty);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            var ca = Cube.Id2Coords[IdCell];
+            var title = $"Player:{Player} MovePlacement; Weight: {Weight}";
+            sb.AppendLine(title);
+            var tail = $"To  : [{IdCell,2:00}]{ca}";
+            sb.AppendLine(tail);
+
+            return sb.ToString();
         }
     }
 }

@@ -20,7 +20,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, 0);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 3);
@@ -50,7 +50,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Two Cells Cube with obstruction (1)")]
-        public void TestCase02TwoCells1()
+        public void TestCase02TwoCells()
         {
             var cube = new Cube();
             cube.SetCell((0, 0, 0), Content.P1);
@@ -59,7 +59,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, 0);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 2);
@@ -89,7 +89,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Two Cells Cube without obstruction (2)")]
-        public void TestCase03TwoCells2()
+        public void TestCase03TwoCells()
         {
             var cube = new Cube();
             cube.SetCell((0, 0, 0), Content.P1);
@@ -98,7 +98,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, 0);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 3);
@@ -128,7 +128,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Three Cells Cube with killed opponent (1)")]
-        public void TestCase04ThreeCellsOneKill1()
+        public void TestCase04ThreeCellsOneKill()
         {
             var cube = new Cube();
             cube.SetCell((0, 0, 0), Content.P1);
@@ -140,7 +140,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, 0);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 3);
@@ -164,7 +164,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Three Cells Cube with killed opponent (2)")]
-        public void TestCase05ThreeCellsOneKill2()
+        public void TestCase05ThreeCellsOneKill()
         {
             var cube = new Cube();
             cube.SetCell((0, 2, 0), Content.P1);
@@ -176,7 +176,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, cube.GetCell((0, 2, 0)).Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 3);
@@ -199,7 +199,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Kill two opponents (1)")]
-        public void TestCase06KillTwoOpponents1()
+        public void TestCase06KillTwoOpponents()
         {
             var cube = new Cube();
 
@@ -223,7 +223,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, cell1.Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 3);
@@ -246,7 +246,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Kill two opponents (2)")]
-        public void TestCase07KillTwoOpponents2()
+        public void TestCase07KillTwoOpponents()
         {
             var cube = new Cube();
 
@@ -270,7 +270,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, cell1.Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 4);
@@ -293,7 +293,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Kill two opponents with bonus (1)")]
-        public void TestCase08KillTwoOpponentsBonus1()
+        public void TestCase08KillTwoOpponentsBonus()
         {
             var cube = new Cube();
 
@@ -318,7 +318,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, cell1.Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 4);
@@ -346,7 +346,7 @@ namespace TestNUnit
         }
 
         [Test(Description = "Kill two opponents with bonus (2)")]
-        public void TestCase09KillTwoOpponentsBonus2()
+        public void TestCase09KillTwoOpponentsBonus()
         {
             var cube = new Cube();
 
@@ -370,7 +370,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, cell1.Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 3);
@@ -426,7 +426,7 @@ namespace TestNUnit
 
             var root = new MoveBattle(Content.P1, cell1.Id);
             var moves = new SortedSet<MoveBattle>();
-            Generator.BuildMoveBattleStep(cube, root, moves);
+            Generator.BuildMoveBattle(cube, root, moves);
             var exportAfter = cube.ExportState();
 
             Assert.AreEqual(moves.Count, 5);
