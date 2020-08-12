@@ -13,6 +13,7 @@ namespace ChaxGame.Moves
         public MovePass(Content player)
         {
             Player = player;
+            ActionType = ActionType.Pass;
         }
 
         /// <summary>

@@ -63,13 +63,18 @@ namespace ChaxGame
             Player = move.Player;
         }
 
+        public bool EndGame()
+        {
+            var sc = Cube.ComputeCubeScore(Player);
+            return Turn > 2 && (sc.NbPlayer == 0 || sc.NbOpponent == 0);
+        }
+
         public void DoMoveAndDisplay(IMove move)
         {
             Console.WriteLine(move);
             Console.WriteLine("#############");
-            Console.ReadLine();
 
-            if (Turn < 25)
+            if (Turn < 25 || move.ActionType == ActionType.Pass)
             {
                 Do(move);
                 GridConsole.DisplayCube(Cube);
@@ -87,7 +92,8 @@ namespace ChaxGame
                     ms.DoStep(Cube, mv.Player);
                     GridConsole.DisplayCube(Cube);
                     Console.WriteLine($"frame: {++k}/{nb}");
-                    Console.ReadLine();
+                    if (k != nb)
+                        Console.ReadLine();
                 }
 
                 Console.WriteLine("End Display");

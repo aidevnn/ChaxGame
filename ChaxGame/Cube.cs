@@ -291,9 +291,9 @@ namespace ChaxGame
             for(int i = 0; i < 24; ++i)
             {
                 var c = AllCells[i].Content;
-                if (c == Content.Empty) s += ' ';
-                else if (c == Content.P1) s += 'X';
-                else s += 'O';
+                if (c == Content.Empty) s += '0';
+                else if (c == Content.P1) s += '1';
+                else s += '2';
             }
 
             return s;
@@ -311,11 +311,10 @@ namespace ChaxGame
             for(int i = 0; i < 24; ++i)
             {
                 var c = s[i];
-                if (c == 'X') AllCells[i].Content = Content.P1;
-                else if (c == 'O') AllCells[i].Content = Content.P2;
+                if (c == '1') AllCells[i].Content = Content.P1;
+                else if (c == '2') AllCells[i].Content = Content.P2;
                 else AllCells[i].Content = Content.Empty;
             }
         }
-
     }
 }

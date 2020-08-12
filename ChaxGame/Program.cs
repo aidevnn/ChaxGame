@@ -4,20 +4,18 @@ namespace ChaxGame
 {
     class MainClass
     {
-        public static Random Random = new Random();
+        public static Random Random = new Random(2543);
 
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-
             //DisplayDemo.Moves1();
-
-            //Benchmark.BruteForce(4);
+            //Benchmark.BruteForce(6);
 
             var g = new GameState(MoveStrategy.Domination);
-            while (true)
+            g.Cube.ImportState("112001122011101101000001");g.Turn = 39;g.Player = Content.P1;
+            while (!g.EndGame())
             {
-                int depth = g.Turn < 25 ? 3 : 4;
+                int depth = g.Turn < 25 ? 3 : 6;
                 GridConsole.DisplayCube(g.Cube);
                 Console.WriteLine("Compute....");
 

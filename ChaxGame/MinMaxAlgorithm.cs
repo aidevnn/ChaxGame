@@ -76,6 +76,7 @@ namespace ChaxGame
                 node.BestChild = new Node(node, moves.First());
                 foreach(var mv in moves)
                 {
+                    g.Do(mv);
                     var child = new Node(node, mv);
                     AlphaBeta(g, child, Player, depth - 1, alpha, beta);
                     if (node.Score < child.Score)
@@ -83,6 +84,8 @@ namespace ChaxGame
                         node.BestChild = child;
                         node.Score = child.Score;
                     }
+
+                    g.Undo(mv);
 
                     alpha = Math.Max(alpha, node.Score);
                     if (alpha > beta)
@@ -96,6 +99,7 @@ namespace ChaxGame
                 node.BestChild = new Node(node, moves.First());
                 foreach (var mv in moves)
                 {
+                    g.Do(mv);
                     var child = new Node(node, mv);
                     AlphaBeta(g, child, Player, depth - 1, alpha, beta);
                     if (node.Score > child.Score)
@@ -103,6 +107,8 @@ namespace ChaxGame
                         node.BestChild = child;
                         node.Score = child.Score;
                     }
+
+                    g.Undo(mv);
 
                     beta = Math.Min(beta, node.Score);
                     if (beta < alpha)
